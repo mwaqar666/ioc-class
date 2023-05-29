@@ -1,5 +1,5 @@
 {
-  "name": "ts-di",
+  "name": "typescript-di",
   "version": "1.0.0",
   "description": "Dependency injection for Typescript using Reflection APIs",
   "main": "dist/index.js",
