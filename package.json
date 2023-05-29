@@ -26,7 +26,8 @@
     "path:resolve": "tspc --emitDeclarationOnly",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-path .eslintignore --fix --ext .js,.ts .",
-    "format": "prettier --ignore-path .prettierignore --write \"**/*.+(js|ts|json)\""
+    "format": "prettier --ignore-path .prettierignore --write \"**/*.+(js|ts|json)\"",
+    "prepublish": "pnpm run build:prod"
   },
   "keywords": [
     "Dependency Injection",
