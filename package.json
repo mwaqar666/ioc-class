@@ -2,6 +2,14 @@
   "name": "typescript-di",
   "version": "1.0.0",
   "description": "Dependency injection for Typescript using Reflection APIs",
+  "bugs": {
+    "email": "muhammadwaqar666@gmail.com",
+    "url": "https://github.com/mwaqar666/typescript-di/issues"
+  },
+  "repository": {
+    "url": "https://github.com/mwaqar666/typescript-di",
+    "type": "git"
+  },
   "main": "dist/index.js",
   "types": "dist/@types/index.d.ts",
   "files": [
