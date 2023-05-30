@@ -1,6 +1,6 @@
 {
   "name": "ioc-class",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dependency injection for Typescript using Reflection APIs",
   "bugs": {
     "email": "muhammadwaqar666@gmail.com",
@@ -40,7 +40,7 @@
     "Reflection"
   ],
   "author": "Muhammad Waqar",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.7",
     "@typescript-eslint/parser": "^5.59.7",
