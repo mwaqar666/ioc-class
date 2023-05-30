@@ -31,17 +31,14 @@ import "reflect-metadata";
 Declare some dependencies
 
 ```typescript
-class BookService {
-}
+class BookService {}
 
-interface IShelfService {
-}
+interface IShelfService {}
 
 class ShelfService implements IShelfService {
 	public constructor(
 		private readonly bookService: BookService,
-	) {
-	}
+	) {}
 }
 
 const ShelfServiceToken = new Token<IShelfService>("ShelfService");
@@ -49,8 +46,7 @@ const ShelfServiceToken = new Token<IShelfService>("ShelfService");
 class LibraryService {
 	public constructor(
 		@Inject(ShelfServiceToken) private readonly shelfService: IShelfService,
-	) {
-	}
+	) {}
 }
 ```
 
@@ -93,8 +89,7 @@ const container: IContainer = new Container();
 #### Register a singleton dependency
 
 ```typescript
-class UserService {
-}
+class UserService {}
 
 container.registerSingleton(UserService);
 
@@ -106,11 +101,9 @@ container.resolve(UserService) // UserService
 ```typescript
 import { Token } from "ioc-class";
 
-interface IUserService {
-}
+interface IUserService {}
 
-class UserService implements IUserService {
-}
+class UserService implements IUserService {}
 
 const UserServiceToken = new Token<IUserService>("UserService");
 container.registerSingleton(UserServiceToken, UserService);
@@ -121,8 +114,7 @@ container.resolve(UserServiceToken); // UserService
 #### Register a transient dependency
 
 ```typescript
-class UserService {
-}
+class UserService {}
 
 container.registerTransient(UserService);
 
@@ -134,11 +126,9 @@ container.resolve(UserService) // UserService
 ```typescript
 import { Token } from "ioc-class";
 
-interface IUserService {
-}
+interface IUserService {}
 
-class UserService implements IUserService {
-}
+class UserService implements IUserService {}
 
 const UserServiceToken = new Token<IUserService>("UserService");
 container.registerTransient(UserServiceToken, UserService);
@@ -151,19 +141,16 @@ container.resolve(UserService) // UserService
 ```typescript
 import { Inject, Token } from "ioc-class";
 
-interface IBookService {
-}
+interface IBookService {}
 
-class BookService implements IBookService {
-}
+class BookService implements IBookService {}
 
 const BookServiceToken = new Token<IBookService>("BookServiceToken");
 
 class UserService {
 	public constructor(
 		@Inject(BookServiceToken) private readonly bookService: IBookService,
-	) {
-	}
+	) {}
 }
 
 container.registerSingleton(BookServiceToken, BookService);
@@ -185,21 +172,17 @@ Yes, but there is a catch. Consider an example where the constructor initializat
 ```typescript
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	return new Proxy(target, {
-		construct(concrete: Constructable<T>, args: Array<any>) {
-			//
-		}
+		construct(concrete: Constructable<T>, args: Array<any>) {}
 	})
 }
 
-class DemoService {
-}
+class DemoService {}
 
 @Decorator
 class UserService {
 	public constructor(
 		private readonly demoService: DemoService,
-	) {
-	}
+	) {}
 }
 
 const container = new Container();
@@ -219,9 +202,7 @@ import { copyMetadata } from "ioc-class";
 
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	const proxifiedTarget = new Proxy(target, {
-		construct(concrete: Constructable<T>, args: Array<any>) {
-			//
-		}
+		construct(concrete: Constructable<T>, args: Array<any>) {}
 	});
 
 	// This will copy the metadata properties from the original class constructor to the proxified one.
