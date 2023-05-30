@@ -16,12 +16,8 @@
     "dist"
   ],
   "scripts": {
-    "build:dev:pack": "pnpm run rm:pack && pnpm run build:dev && pnpm run build:pack",
-    "build:prod:pack": "pnpm run rm:pack && pnpm run build:prod && pnpm run build:pack",
     "build:dev": "pnpm run rm:dist && webpack --env mode=development && pnpm run path:resolve",
     "build:prod": "pnpm run rm:dist && webpack --env mode=production && pnpm run path:resolve",
-    "rm:pack": "rm -rf ts-di-?.?.?.tgz",
-    "build:pack": "pnpm pack",
     "rm:dist": "rm -rf dist",
     "path:resolve": "tspc --emitDeclarationOnly",
     "typecheck": "tsc --noEmit",
