@@ -15,7 +15,7 @@ This library uses `reflect-metadata` for dependency resolution, so you have to i
 
 ```bash
 npm install reflect-metadata
-npm install ioc-class
+npm install iocc
 ```
 
 ## Usage/Examples
@@ -31,14 +31,17 @@ import "reflect-metadata";
 Declare some dependencies
 
 ```typescript
-class BookService {}
+class BookService {
+}
 
-interface IShelfService {}
+interface IShelfService {
+}
 
 class ShelfService implements IShelfService {
 	public constructor(
 		private readonly bookService: BookService,
-	) {}
+	) {
+	}
 }
 
 const ShelfServiceToken = new Token<IShelfService>("ShelfService");
@@ -46,7 +49,8 @@ const ShelfServiceToken = new Token<IShelfService>("ShelfService");
 class LibraryService {
 	public constructor(
 		@Inject(ShelfServiceToken) private readonly shelfService: IShelfService,
-	) {}
+	) {
+	}
 }
 ```
 
@@ -76,12 +80,12 @@ const libraryService: LibraryService = container.resolve(LibraryService);
 const bookService: BookService = container.resolve(BookService);
 ```
 
-## API Reference
+## Documentation
 
 #### Initialize container
 
 ```typescript
-import { Container, IContainer } from "ioc-class";
+import { Container, IContainer } from "iocc";
 
 const container: IContainer = new Container();
 ```
@@ -89,7 +93,8 @@ const container: IContainer = new Container();
 #### Register a singleton dependency
 
 ```typescript
-class UserService {}
+class UserService {
+}
 
 container.registerSingleton(UserService);
 
@@ -99,11 +104,13 @@ container.resolve(UserService) // UserService
 #### Register a singleton dependency using the resolution token
 
 ```typescript
-import { Token } from "ioc-class";
+import { Token } from "iocc";
 
-interface IUserService {}
+interface IUserService {
+}
 
-class UserService implements IUserService {}
+class UserService implements IUserService {
+}
 
 const UserServiceToken = new Token<IUserService>("UserService");
 container.registerSingleton(UserServiceToken, UserService);
@@ -114,7 +121,8 @@ container.resolve(UserServiceToken); // UserService
 #### Register a transient dependency
 
 ```typescript
-class UserService {}
+class UserService {
+}
 
 container.registerTransient(UserService);
 
@@ -124,11 +132,13 @@ container.resolve(UserService) // UserService
 #### Register a transient dependency using the resolution token
 
 ```typescript
-import { Token } from "ioc-class";
+import { Token } from "iocc";
 
-interface IUserService {}
+interface IUserService {
+}
 
-class UserService implements IUserService {}
+class UserService implements IUserService {
+}
 
 const UserServiceToken = new Token<IUserService>("UserService");
 container.registerTransient(UserServiceToken, UserService);
@@ -139,18 +149,21 @@ container.resolve(UserService) // UserService
 #### Inject a dependency using the resolution token
 
 ```typescript
-import { Inject, Token } from "ioc-class";
+import { Inject, Token } from "iocc";
 
-interface IBookService {}
+interface IBookService {
+}
 
-class BookService implements IBookService {}
+class BookService implements IBookService {
+}
 
 const BookServiceToken = new Token<IBookService>("BookServiceToken");
 
 class UserService {
 	public constructor(
 		@Inject(BookServiceToken) private readonly bookService: IBookService,
-	) {}
+	) {
+	}
 }
 
 container.registerSingleton(BookServiceToken, BookService);
@@ -172,17 +185,20 @@ Yes, but there is a catch. Consider an example where the constructor initializat
 ```typescript
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	return new Proxy(target, {
-		construct(concrete: Constructable<T>, args: Array<any>) {}
+		construct(concrete: Constructable<T>, args: Array<any>) {
+		}
 	})
 }
 
-class DemoService {}
+class DemoService {
+}
 
 @Decorator
 class UserService {
 	public constructor(
 		private readonly demoService: DemoService,
-	) {}
+	) {
+	}
 }
 
 const container = new Container();
@@ -198,11 +214,12 @@ Here the `UserService` instance will be created, but `demoService` will be undef
 To work around this issue, use the helper function `copyMetadata` like this:
 
 ```typescript
-import { copyMetadata } from "ioc-class";
+import { copyMetadata } from "iocc";
 
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	const proxifiedTarget = new Proxy(target, {
-		construct(concrete: Constructable<T>, args: Array<any>) {}
+		construct(concrete: Constructable<T>, args: Array<any>) {
+		}
 	});
 
 	// This will copy the metadata properties from the original class constructor to the proxified one.
