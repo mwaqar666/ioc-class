@@ -76,7 +76,9 @@ export class Container implements IContainer {
 
 	private registerDependencyOnce<T>(resolution: "singleton" | "transient", token: Token<T>, dependency: Constructable<T>): void {
 		const dependencyAlreadyRegistered: boolean = this.registeredDependencies.has(token);
-		if (dependencyAlreadyRegistered) return;
+		if (dependencyAlreadyRegistered) {
+			throw new Error(`${dependency.name} has been already registered!`);
+		}
 
 		const registeredDependency: IRegisteredDependency<T> = {
 			dependency,

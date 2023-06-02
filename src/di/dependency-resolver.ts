@@ -69,7 +69,7 @@ export class DependencyResolver implements IDependencyResolver {
 
 		if (dependency.resolution === "singleton") return;
 
-		throw new Error(`Captive dependency detected: Singleton(${dependent.dependency.name}) -> Transient(${dependency.dependency.name}) `);
+		throw new Error(`Captive dependency detected: Singleton[${dependent.dependency.name}] -> Transient[${dependency.dependency.name}]`);
 	}
 
 	private resolveDependencyCustomMetadata<T>(dependency: Constructable<T>): RequiredDependencyMap {
