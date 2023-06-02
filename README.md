@@ -19,7 +19,7 @@ npm install reflect-metadata
 npm install iocc
 ```
 
-## Usage/Examples
+## Quick Start
 
 Import the `reflect-metadata` library on the project entry point.
 
@@ -81,20 +81,29 @@ const libraryService: LibraryService = container.resolve(LibraryService);
 const bookService: BookService = container.resolve(BookService);
 ```
 
-## Documentation
+## Examples
 
 #### Initialize container
 
 ```typescript
-import { Container, IContainer } from "iocc";
+import { Container, IContainer } from "typescript-di";
 
 const container: IContainer = new Container();
+```
+
+#### Initialize container (w/o captive dependency detection)
+
+```typescript
+import { Container, IContainer } from "typescript-di";
+
+const container: IContainer = new Container({ checkForCaptiveDependencies: false });
 ```
 
 #### Register a singleton dependency
 
 ```typescript
 class UserService {
+	//
 }
 
 container.registerSingleton(UserService);
@@ -105,7 +114,7 @@ container.resolve(UserService) // UserService
 #### Register a singleton dependency using the resolution token
 
 ```typescript
-import { Token } from "iocc";
+import { Token } from "typescript-di";
 
 interface IUserService {
 }
@@ -123,6 +132,7 @@ container.resolve(UserServiceToken); // UserService
 
 ```typescript
 class UserService {
+	//
 }
 
 container.registerTransient(UserService);
@@ -133,7 +143,7 @@ container.resolve(UserService) // UserService
 #### Register a transient dependency using the resolution token
 
 ```typescript
-import { Token } from "iocc";
+import { Token } from "typescript-di";
 
 interface IUserService {
 }
@@ -150,7 +160,7 @@ container.resolve(UserService) // UserService
 #### Inject a dependency using the resolution token
 
 ```typescript
-import { Inject, Token } from "iocc";
+import { Inject, Token } from "typescript-di";
 
 interface IBookService {
 }
@@ -173,6 +183,78 @@ container.registerSingleton(UserService);
 container.resolve(UserService); // UserService
 ```
 
+## API Reference
+
+### Container
+
+#### Initialize container
+
+```typescript
+const container: IContainer = new Container({
+	checkForCaptiveDependencies: boolean, // Throw on captive dependencies
+});
+```
+
+#### Register a singleton dependency
+
+```
+registerSingleton<T>(token: Constructable<T>): void;
+```
+
+#### Register a singleton dependency using the resolution token
+
+```
+container.registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
+```
+
+#### Register a transient dependency
+
+```
+container.registerTransient<T>(token: Constructable<T>): void;
+```
+
+#### Register a transient dependency using the resolution token
+
+```
+container.registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;
+```
+
+#### Resolve a dependency
+
+```
+container.resolve<T>(dependency: Constructable<T>): T;
+```
+
+#### Resolve a dependency using the resolution token
+
+```
+container.resolve<T>(dependency: Token<T>): T;
+```
+
+#### Get container config
+
+```
+container.getContainerConfig(): IContainerConfig;
+```
+
+#### Get resolved singleton dependencies
+
+```
+container.getResolvedSingletonDependencies(): SingletonDependencyMap;
+```
+
+#### Get registered dependencies
+
+```
+container.getRegisteredDependencies(): DependencyMap;
+```
+
+#### Create dependency token
+
+```
+container.createDependencyToken<T>(dependency: Constructable<T>): Token<T>;
+```
+
 ## FAQ
 
 #### Can it resolve type hinted dependency when used as typed imports?
@@ -187,6 +269,7 @@ Yes, but there is a catch. Consider an example where the constructor initializat
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	return new Proxy(target, {
 		construct(concrete: Constructable<T>, args: Array<any>) {
+			//
 		}
 	})
 }
@@ -215,11 +298,12 @@ Here the `UserService` instance will be created, but `demoService` will be undef
 To work around this issue, use the helper function `copyMetadata` like this:
 
 ```typescript
-import { copyMetadata } from "iocc";
+import { copyMetadata } from "typescript-di";
 
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	const proxifiedTarget = new Proxy(target, {
 		construct(concrete: Constructable<T>, args: Array<any>) {
+			//
 		}
 	});
 

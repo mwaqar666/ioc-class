@@ -1,16 +1,24 @@
 import type { Token } from "@/di";
-import type { Constructable } from "@/types";
+import type { Constructable, DependencyMap, IContainerConfig, SingletonDependencyMap } from "@/types";
 
 export interface IContainer {
 	resolve<T>(dependency: Token<T>): T;
 
-	resolve<T, TArgs extends Array<unknown>>(dependency: Constructable<T, TArgs>): T;
+	resolve<T>(dependency: Constructable<T>): T;
 
-	registerSingleton<T, TArgs extends Array<unknown>>(token: Constructable<T, TArgs>): void;
+	registerSingleton<T>(token: Constructable<T>): void;
 
-	registerSingleton<T, TArgs extends Array<unknown>>(token: Token<T>, dependency: Constructable<T, TArgs>): void;
+	registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
 
-	registerTransient<T, TArgs extends Array<unknown>>(token: Constructable<T, TArgs>): void;
+	registerTransient<T>(token: Constructable<T>): void;
 
-	registerTransient<T, TArgs extends Array<unknown>>(token: Token<T>, dependency: Constructable<T, TArgs>): void;
+	registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;
+
+	getContainerConfig(): IContainerConfig;
+
+	getResolvedSingletonDependencies(): SingletonDependencyMap;
+
+	getRegisteredDependencies(): DependencyMap;
+
+	createDependencyToken<T>(dependency: Constructable<T>): Token<T>;
 }

@@ -3,9 +3,15 @@ import type { Constructable } from "@/types/common";
 
 export type Injectable = <T>(identifier: Token<T>) => ParameterDecorator;
 
-export interface IRegisteredDependency<T, TArgs extends Array<unknown> = Array<unknown>> {
-	dependency: Constructable<T, TArgs>;
-	resolution: "singleton" | "transient";
+export interface IContainerConfig {
+	checkForCaptiveDependencies: boolean;
+}
+
+export type DependencyResolutionType = "singleton" | "transient";
+
+export interface IRegisteredDependency<T> {
+	dependency: Constructable<T>;
+	resolution: DependencyResolutionType;
 }
 
 export type DependencyMap = Map<Token<unknown>, IRegisteredDependency<unknown>>;

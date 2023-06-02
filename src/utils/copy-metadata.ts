@@ -1,6 +1,6 @@
 import type { Constructable } from "@/types";
 
-export const copyMetadata = <T, TArgs extends Array<unknown>>(targetFrom: Constructable<T, TArgs>, targetTo: Constructable<T, TArgs>): Constructable<T, TArgs> => {
+export const copyMetadata = <T>(targetFrom: Constructable<T>, targetTo: Constructable<T>): Constructable<T> => {
 	const originalMetadataKeys: Array<any> = Reflect.getMetadataKeys(targetFrom);
 
 	for (const metadataKey of originalMetadataKeys) {
