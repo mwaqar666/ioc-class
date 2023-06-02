@@ -4,10 +4,10 @@
   "description": "Dependency injection for Typescript using Reflection APIs",
   "bugs": {
     "email": "muhammadwaqar666@gmail.com",
-    "url": "https://github.com/mwaqar666/ioc-class/issues"
+    "url": "https://github.com/mwaqar666/iocc/issues"
   },
   "repository": {
-    "url": "https://github.com/mwaqar666/ioc-class",
+    "url": "https://github.com/mwaqar666/iocc",
     "type": "git"
   },
   "main": "dist/index.js",
