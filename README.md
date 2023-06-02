@@ -1,6 +1,6 @@
-# Project Title
+# IOCC
 
-Simple dependency injection library for Typescript
+Simple class dependency injection library for Typescript
 
 ## Features
 
@@ -8,6 +8,7 @@ Simple dependency injection library for Typescript
 - Support for singleton and transient dependencies
 - Support to run on both browser and server
 - No dependencies except `reflect-metadata`
+- Protection against captive dependencies
 
 ## Installation
 
