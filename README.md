@@ -82,7 +82,7 @@ const bookService: BookService = container.resolve(BookService);
 #### Initialize container
 
 ```typescript
-import { Container, IContainer } from "typescript-di";
+import { Container, IContainer } from "iocc";
 
 const container: IContainer = new Container();
 ```
@@ -90,7 +90,7 @@ const container: IContainer = new Container();
 #### Initialize container (w/o captive dependency detection)
 
 ```typescript
-import { Container, IContainer } from "typescript-di";
+import { Container, IContainer } from "iocc";
 
 const container: IContainer = new Container({ checkForCaptiveDependencies: false });
 ```
@@ -108,7 +108,7 @@ container.resolve(UserService);
 #### Register a singleton dependency using the resolution token
 
 ```typescript
-import { Token } from "typescript-di";
+import { Token } from "iocc";
 
 interface IUserService {}
 
@@ -133,7 +133,7 @@ container.resolve(UserService);
 #### Register a transient dependency using the resolution token
 
 ```typescript
-import { Token } from "typescript-di";
+import { Token } from "iocc";
 
 interface IUserService {}
 
@@ -148,7 +148,7 @@ container.resolve(UserService);
 #### Inject a dependency using the resolution token
 
 ```typescript
-import { Inject, Token } from "typescript-di";
+import { Inject, Token } from "iocc";
 
 interface IBookService {}
 
@@ -279,7 +279,7 @@ Here the `UserService` instance will be created, but `demoService` will be undef
 To work around this issue, use the helper function `copyMetadata` like this:
 
 ```typescript
-import { copyMetadata } from "typescript-di";
+import { copyMetadata } from "iocc";
 
 const Decorator = <T>(target: Constructable<T>): Constructable<T> => {
 	const proxifiedTarget = new Proxy(target, {
