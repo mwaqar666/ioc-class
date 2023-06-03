@@ -1,7 +1,9 @@
 # IOCC
+
 Simple class dependency injection library for Typescript
 
 ## Table of Contents  
+
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -29,6 +31,7 @@ This library uses `reflect-metadata` for dependency resolution, so you have to i
 npm install reflect-metadata
 npm install iocc
 ```
+
 ## Quick Start
 
 Import the `reflect-metadata` library on the project entry point.
@@ -193,7 +196,6 @@ container.registerTransient(bookToken, Book);
 const libraryToken = new Token<ILibrary>("LIBRARY");
 container.registerSingleton(libraryToken, Library);
 ```
-
 
 ### Dependency Resolution
 
