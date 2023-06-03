@@ -33,7 +33,8 @@
     "IoC",
     "Container",
     "IoC Container",
-    "Reflection"
+    "Reflection",
+    "Captive Dependency Protection"
   ],
   "author": "Muhammad Waqar",
   "license": "MIT",
