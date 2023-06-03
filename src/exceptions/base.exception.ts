@@ -10,8 +10,4 @@ export class BaseException extends Error {
 
 		this.message = message;
 	}
-
-	public override toString(): string {
-		return `IOCC Exception: ${this.message}`;
-	}
 }

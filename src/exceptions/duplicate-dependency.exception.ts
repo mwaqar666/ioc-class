@@ -7,6 +7,6 @@ import { BaseException } from "@/exceptions/base.exception";
  */
 export class DuplicateDependencyException extends BaseException {
 	public constructor(dependencyName: string) {
-		super(`${dependencyName} has been already registered!`);
+		super(`"${dependencyName}" has been already registered!`);
 	}
 }
