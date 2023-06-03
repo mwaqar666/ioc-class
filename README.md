@@ -1,6 +1,9 @@
 # IOCC
-
 Simple class dependency injection library for Typescript
+
+## Table of Contents  
+[Features](#features)
+
 ## Features
 
 - Multiple container support
