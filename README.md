@@ -2,7 +2,15 @@
 Simple class dependency injection library for Typescript
 
 ## Table of Contents  
-[Features](#features)
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+	- [Container Initialization](#container-initialization)
+	- [Dependency Registration](#dependency-registration)
+	- [Dependency Resolution](#dependency-resolution)
+	- [Protection against captive dependencies](#protection-against-captive-dependencies)
+- [FAQ](#faq)
 
 ## Features
 
@@ -12,6 +20,7 @@ Simple class dependency injection library for Typescript
 - Run on both browser and server
 - Zero dependencies except `reflect-metadata`
 - Protection against [captive dependencies](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines#captive-dependency)
+
 ## Installation
 
 This library uses `reflect-metadata` for dependency resolution, so you have to install it also.
