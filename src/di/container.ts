@@ -1,25 +1,70 @@
-import { DIConst } from "@/const";
+import { ContainerFactory } from "@/di/container-factory";
 import { DependencyResolver } from "@/di/dependency-resolver";
 import { Token } from "@/di/token";
 import type { IContainer, IDependencyResolver } from "@/interfaces";
-import type { Constructable, DependencyMap, IContainerConfig, IRegisteredDependency, Optional, SingletonDependencyMap } from "@/types";
+import type { Constructable, DependencyMap, IRegisteredDependency, Optional, SingletonDependencyMap } from "@/types";
 
+/**
+ * Container class holds all the registered singleton and transient dependencies.
+ * The dependencies are resolved at when requested. To create an instance of the
+ * Container class, you can call the factory method, `Container.of()`
+ *
+ * @implements IContainer
+ * @author Muhammad Waqar
+ */
 export class Container implements IContainer {
-	private readonly containerConfig: IContainerConfig;
-
 	private readonly dependencyResolver: IDependencyResolver;
 
-	private readonly registeredDependencies: DependencyMap = new Map();
-	private readonly resolvedSingletonDependencies: SingletonDependencyMap = new Map();
+	private readonly registeredDependencies: DependencyMap = new Map<Token<unknown>, IRegisteredDependency<unknown>>();
+	private readonly resolvedSingletonDependencies: SingletonDependencyMap = new Map<Token<unknown>, unknown>();
 	private readonly selfCreatedDependencyTokens: Map<string, Token<unknown>> = new Map<string, Token<unknown>>();
 
-	public constructor(containerConfig?: Partial<IContainerConfig>) {
-		this.containerConfig = this.createContainerConfig(containerConfig);
-
+	/**
+	 * You should not create the instance of Container class yourself.
+	 * Use one of the static factory methods on the class instead
+	 *
+	 * @author Muhammad Waqar
+	 */
+	public constructor() {
 		this.dependencyResolver = new DependencyResolver(this);
 	}
 
+	/**
+	 * Create container with default name
+	 *
+	 * @return {IContainer} Container instance
+	 * @author Muhammad Waqar
+	 */
+	public static of(): IContainer;
+	/**
+	 * Create container with provided name
+	 *
+	 * @param {string} containerName Name for the container instance
+	 * @return {IContainer} A container instance
+	 * @author Muhammad Waqar
+	 */
+	public static of(containerName: string): IContainer;
+	public static of(containerName?: string): IContainer {
+		return ContainerFactory.getInstance(Container).of(containerName);
+	}
+
+	/**
+	 * Resolve dependency with the provided token
+	 *
+	 * @template T
+	 * @param {Token<T>} dependency Dependency token
+	 * @return {T} Resolved dependency
+	 * @author Muhammad Waqar
+	 */
 	public resolve<T>(dependency: Token<T>): T;
+	/**
+	 * Resolve dependency with the provided constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @return {T} Resolved dependency
+	 * @author Muhammad Waqar
+	 */
 	public resolve<T>(dependency: Constructable<T>): T;
 	public resolve<T>(dependency: Token<T> | Constructable<T>): T {
 		if (dependency instanceof Token) return this.dependencyResolver.resolveDependency(dependency);
@@ -28,7 +73,24 @@ export class Container implements IContainer {
 		return this.dependencyResolver.resolveDependency(token);
 	}
 
+	/**
+	 * Register a singleton dependency using the dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} token Dependency constructor
+	 * @return {void}
+	 * @author Muhammad Waqar
+	 */
 	public registerSingleton<T>(token: Constructable<T>): void;
+	/**
+	 * Register a singleton dependency using the dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @return {void}
+	 * @author Muhammad Waqar
+	 */
 	public registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
 	public registerSingleton<T>(token: Token<T> | Constructable<T>, dependency?: Constructable<T>): void {
 		if (token instanceof Token) {
@@ -40,7 +102,24 @@ export class Container implements IContainer {
 		this.registerDependencyOnce("singleton", dependencyToken, token);
 	}
 
+	/**
+	 * Register a transient dependency using the dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} token Dependency constructor
+	 * @return {void}
+	 * @author Muhammad Waqar
+	 */
 	public registerTransient<T>(token: Constructable<T>): void;
+	/**
+	 * Register a transient dependency using the dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @return {void}
+	 * @author Muhammad Waqar
+	 */
 	public registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;
 	public registerTransient<T>(token: Token<T> | Constructable<T>, dependency?: Constructable<T>): void {
 		if (token instanceof Token) {
@@ -52,18 +131,34 @@ export class Container implements IContainer {
 		this.registerDependencyOnce("transient", dependencyToken, token);
 	}
 
-	public getContainerConfig(): IContainerConfig {
-		return this.containerConfig;
-	}
-
+	/**
+	 * Retrieves the list of all singleton dependencies that have been requested from the container till yet
+	 *
+	 * @return {SingletonDependencyMap} Map of resolved singleton dependencies with their tokens
+	 * @author Muhammad Waqar
+	 */
 	public getResolvedSingletonDependencies(): SingletonDependencyMap {
 		return this.resolvedSingletonDependencies;
 	}
 
+	/**
+	 * Retrieves the list of all registered dependencies for the container
+	 *
+	 * @return {DependencyMap} Map of registered dependencies with their tokens and resolution type
+	 * @author Muhammad Waqar
+	 */
 	public getRegisteredDependencies(): DependencyMap {
 		return this.registeredDependencies;
 	}
 
+	/**
+	 * Creates a default token for the given dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @return {Token<T>} Default token for the dependency constructor
+	 * @author Muhammad Waqar
+	 */
 	public createDependencyToken<T>(dependency: Constructable<T>): Token<T> {
 		const tokenFromCache: Optional<Token<T>> = this.selfCreatedDependencyTokens.get(dependency.name);
 		if (tokenFromCache) return tokenFromCache;
@@ -85,16 +180,5 @@ export class Container implements IContainer {
 			resolution,
 		};
 		this.registeredDependencies.set(token, <IRegisteredDependency<unknown>>registeredDependency);
-	}
-
-	private createContainerConfig(config?: Partial<IContainerConfig>): IContainerConfig {
-		if (config) {
-			return {
-				...DIConst.DI_CONTAINER_DEFAULT_CONFIG,
-				...config,
-			};
-		}
-
-		return DIConst.DI_CONTAINER_DEFAULT_CONFIG;
 	}
 }

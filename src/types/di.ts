@@ -1,17 +1,55 @@
 import type { Token } from "@/di";
 import type { Constructable } from "@/types/common";
 
-export type Injectable = <T>(identifier: Token<T>) => ParameterDecorator;
-
-export interface IContainerConfig {
-	checkForCaptiveDependencies: boolean;
+/**
+ * Configuration for the injectable class.
+ *
+ * @author Muhammad Waqar
+ */
+export interface InjectableConfig {
+	/**
+	 * Container name where the dependency should be registered
+	 *
+	 * @type string
+	 * @author Muhammad Waqar
+	 */
+	containerName: string;
+	/**
+	 * Dependency resolution type. Can be either “singleton” or “transient”
+	 *
+	 * @type {DependencyResolutionType}
+	 * @author Muhammad Waqar
+	 */
+	dependencyResolution: DependencyResolutionType;
 }
 
 export type DependencyResolutionType = "singleton" | "transient";
 
+/**
+ * Registered dependency type
+ *
+ * @author Muhammad Waqar
+ */
 export interface IRegisteredDependency<T> {
-	dependency: Constructable<T>;
-	resolution: DependencyResolutionType;
+	/**
+	 * Dependency constructor
+	 *
+	 * @template T
+	 * @type {Constructable<T>}
+	 * @author Muhammad Waqar
+	 */
+	readonly dependency: Constructable<T>;
+	/**
+	 * Dependency resolution type. Can be either "singleton" or "transient"
+	 *
+	 * @type {DependencyResolutionType}
+	 * @author Muhammad Waqar
+	 */
+	readonly resolution: DependencyResolutionType;
+}
+
+export interface IResolvedContainerName {
+	readonly containerName: symbol;
 }
 
 export type DependencyMap = Map<Token<unknown>, IRegisteredDependency<unknown>>;

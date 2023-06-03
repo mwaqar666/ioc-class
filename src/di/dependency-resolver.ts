@@ -1,8 +1,15 @@
 import { DIConst } from "@/const";
 import type { Token } from "@/di/token";
 import type { IContainer, IDependencyResolver } from "@/interfaces";
-import type { Constructable, IContainerConfig, IRegisteredDependency, Optional, RequiredDependencyMap } from "@/types";
+import type { Constructable, IRegisteredDependency, Optional, RequiredDependencyMap } from "@/types";
 
+/**
+ * Each container instance has its own IDependencyResolver. Dependency resolver resolves the dependencies
+ * from the associated container class
+ *
+ * @implements IDependencyResolver
+ * @author Muhammad Waqar
+ */
 export class DependencyResolver implements IDependencyResolver {
 	private readonly container: IContainer;
 
@@ -10,21 +17,33 @@ export class DependencyResolver implements IDependencyResolver {
 		this.container = container;
 	}
 
+	/**
+	 * Resolves a dependency by the provided dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @return {T} Resolved dependency
+	 * @author Muhammad Waqar
+	 */
 	public resolveDependency<T>(token: Token<T>): T;
+	/**
+	 * Resolves a dependency by the provided dependency token.
+	 * Also checks for the captive dependency constraint
+	 *
+	 * @template T
+	 * @template P
+	 * @param {Token<T>} token Dependency token
+	 * @param {IRegisteredDependency<P>} parentDependency Dependency token
+	 * @return {T} Resolved dependency
+	 * @author Muhammad Waqar
+	 */
 	public resolveDependency<T, P>(token: Token<T>, parentDependency: IRegisteredDependency<P>): T;
 	public resolveDependency<T, P>(token: Token<T>, parentDependency?: IRegisteredDependency<P>): T {
 		const registeredDependency: IRegisteredDependency<T> = this.verifyDependencyPresenceInContainer(token);
 
-		const { checkForCaptiveDependencies }: IContainerConfig = this.container.getContainerConfig();
-		if (checkForCaptiveDependencies && parentDependency) {
-			this.verifyCaptiveDependencyConstraint(registeredDependency, parentDependency);
-		}
+		if (parentDependency) this.checkForCaptiveDependency(registeredDependency, parentDependency);
 
-		if (registeredDependency.resolution === "singleton") {
-			return this.resolveSingletonDependency(token, registeredDependency);
-		}
-
-		return this.resolveDependencyChain(registeredDependency);
+		return registeredDependency.resolution === "singleton" ? this.resolveSingletonDependency(token, registeredDependency) : this.resolveDependencyChain(registeredDependency);
 	}
 
 	private resolveSingletonDependency<T>(token: Token<T>, registeredDependency: IRegisteredDependency<T>): T {
@@ -64,7 +83,7 @@ export class DependencyResolver implements IDependencyResolver {
 		throw new Error(`Dependency token "${token.name}" not registered with the container`);
 	}
 
-	private verifyCaptiveDependencyConstraint<T, P>(dependency: IRegisteredDependency<T>, dependent: IRegisteredDependency<P>): void {
+	private checkForCaptiveDependency<T, P>(dependency: IRegisteredDependency<T>, dependent: IRegisteredDependency<P>): void {
 		if (dependent.resolution === "transient") return;
 
 		if (dependency.resolution === "singleton") return;
@@ -74,11 +93,13 @@ export class DependencyResolver implements IDependencyResolver {
 
 	private resolveDependencyCustomMetadata<T>(dependency: Constructable<T>): RequiredDependencyMap {
 		const dependencies: Optional<RequiredDependencyMap> = Reflect.getMetadata(DIConst.DI_PARAMS, dependency);
+
 		return dependencies ?? new Map<number, Token<unknown>>();
 	}
 
 	private resolveDependencyParamTypesMetadata<T>(dependency: Constructable<T>): Array<Constructable<unknown>> {
 		const dependencies = Reflect.getMetadata("design:paramtypes", dependency);
+
 		return dependencies ?? [];
 	}
 }

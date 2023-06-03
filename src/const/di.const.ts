@@ -1,9 +1,12 @@
-import type { IContainerConfig } from "@/types";
+import type { InjectableConfig } from "@/types";
 
 export class DIConst {
 	public static readonly DI_PARAMS: unique symbol = Symbol("DI_PARAMS");
 
-	public static readonly DI_CONTAINER_DEFAULT_CONFIG: IContainerConfig = {
-		checkForCaptiveDependencies: true,
+	public static readonly DEFAULT_CONTAINER_NAME: string = "DEFAULT";
+
+	public static readonly DEFAULT_INJECTABLE_CONFIG: InjectableConfig = {
+		containerName: DIConst.DEFAULT_CONTAINER_NAME,
+		dependencyResolution: "singleton",
 	};
 }
