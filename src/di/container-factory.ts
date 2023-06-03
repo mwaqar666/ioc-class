@@ -32,11 +32,11 @@ export class ContainerFactory implements IContainerFactory {
 	 * If the container with the provided name is present, returns the same instance, otherwise,
 	 * create, store and return the new container instance.
 	 *
-	 * @param {Optional<string>} name Container name to retrieve
+	 * @param {Optional<symbol>} name Container name to retrieve
 	 * @return {IContainer} Container instance
 	 * @author Muhammad Waqar
 	 */
-	public of(name: Optional<string>): IContainer {
+	public of(name: Optional<symbol>): IContainer {
 		const { containerName }: IResolvedContainerName = this.resolveContainerName(name);
 
 		const containerInstance: Optional<IContainer> = this.containerInstances.get(containerName);
@@ -48,15 +48,15 @@ export class ContainerFactory implements IContainerFactory {
 		return newContainerInstance;
 	}
 
-	private resolveContainerName(containerName: Optional<string>): IResolvedContainerName {
+	private resolveContainerName(containerName: Optional<symbol>): IResolvedContainerName {
 		if (!containerName) {
 			return {
-				containerName: Symbol(DIConst.DEFAULT_CONTAINER_NAME),
+				containerName: DIConst.DEFAULT_CONTAINER_NAME,
 			};
 		}
 
 		return {
-			containerName: Symbol(containerName),
+			containerName: containerName,
 		};
 	}
 }

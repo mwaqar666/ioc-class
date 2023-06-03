@@ -10,17 +10,17 @@ export interface InjectableConfig {
 	/**
 	 * Container name where the dependency should be registered
 	 *
-	 * @type string
+	 * @type {symbol}
 	 * @author Muhammad Waqar
 	 */
-	containerName: string;
+	readonly containerName: symbol;
 	/**
 	 * Dependency resolution type. Can be either “singleton” or “transient”
 	 *
 	 * @type {DependencyResolutionType}
 	 * @author Muhammad Waqar
 	 */
-	dependencyResolution: DependencyResolutionType;
+	readonly dependencyResolution: DependencyResolutionType;
 }
 
 export type DependencyResolutionType = "singleton" | "transient";

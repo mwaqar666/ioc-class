@@ -8,6 +8,9 @@ export interface IDependencyResolver {
 	 * @template T
 	 * @param {Token<T>} token Dependency token
 	 * @return {T} Resolved dependency
+	 * @throws MissingDependencyException
+	 * @throws CaptiveDependencyException
+	 * @throws InvalidDependencyException
 	 * @author Muhammad Waqar
 	 */
 	resolveDependency<T>(token: Token<T>): T;
@@ -21,6 +24,9 @@ export interface IDependencyResolver {
 	 * @param {Token<T>} token Dependency token
 	 * @param {IRegisteredDependency<P>} parentDependency Dependency token
 	 * @return {T} Resolved dependency
+	 * @throws MissingDependencyException
+	 * @throws CaptiveDependencyException
+	 * @throws InvalidDependencyException
 	 * @author Muhammad Waqar
 	 */
 	resolveDependency<T, P>(token: Token<T>, parentDependency: IRegisteredDependency<P>): T;

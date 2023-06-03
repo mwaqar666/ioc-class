@@ -28,6 +28,7 @@ export interface IContainer {
 	 * @template T
 	 * @param {Constructable<T>} token Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	registerSingleton<T>(token: Constructable<T>): void;
@@ -39,6 +40,7 @@ export interface IContainer {
 	 * @param {Token<T>} token Dependency token
 	 * @param {Constructable<T>} dependency Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
@@ -49,6 +51,7 @@ export interface IContainer {
 	 * @template T
 	 * @param {Constructable<T>} token Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	registerTransient<T>(token: Constructable<T>): void;
@@ -60,6 +63,7 @@ export interface IContainer {
 	 * @param {Token<T>} token Dependency token
 	 * @param {Constructable<T>} dependency Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;

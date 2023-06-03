@@ -7,9 +7,9 @@ export interface IContainerFactory {
 	 * If the container with the provided name is present, returns the same instance, otherwise,
 	 * create, store and return the new container instance.
 	 *
-	 * @param {Optional<string>} name Container name to retrieve
+	 * @param {Optional<symbol>} name Container name to retrieve
 	 * @return {IContainer} Container instance
 	 * @author Muhammad Waqar
 	 */
-	of(name: Optional<string>): IContainer;
+	of(name: Optional<symbol>): IContainer;
 }

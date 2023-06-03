@@ -1,6 +1,7 @@
 import { ContainerFactory } from "@/di/container-factory";
 import { DependencyResolver } from "@/di/dependency-resolver";
 import { Token } from "@/di/token";
+import { DuplicateDependencyException } from "@/exceptions";
 import type { IContainer, IDependencyResolver } from "@/interfaces";
 import type { Constructable, DependencyMap, IRegisteredDependency, Optional, SingletonDependencyMap } from "@/types";
 
@@ -39,12 +40,12 @@ export class Container implements IContainer {
 	/**
 	 * Create container with provided name
 	 *
-	 * @param {string} containerName Name for the container instance
+	 * @param {symbol} containerName Name for the container instance
 	 * @return {IContainer} A container instance
 	 * @author Muhammad Waqar
 	 */
-	public static of(containerName: string): IContainer;
-	public static of(containerName?: string): IContainer {
+	public static of(containerName: symbol): IContainer;
+	public static of(containerName?: symbol): IContainer {
 		return ContainerFactory.getInstance(Container).of(containerName);
 	}
 
@@ -79,6 +80,7 @@ export class Container implements IContainer {
 	 * @template T
 	 * @param {Constructable<T>} token Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	public registerSingleton<T>(token: Constructable<T>): void;
@@ -89,6 +91,7 @@ export class Container implements IContainer {
 	 * @param {Token<T>} token Dependency token
 	 * @param {Constructable<T>} dependency Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	public registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
@@ -108,6 +111,7 @@ export class Container implements IContainer {
 	 * @template T
 	 * @param {Constructable<T>} token Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	public registerTransient<T>(token: Constructable<T>): void;
@@ -118,6 +122,7 @@ export class Container implements IContainer {
 	 * @param {Token<T>} token Dependency token
 	 * @param {Constructable<T>} dependency Dependency constructor
 	 * @return {void}
+	 * @throws DuplicateDependencyException
 	 * @author Muhammad Waqar
 	 */
 	public registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;
@@ -172,7 +177,7 @@ export class Container implements IContainer {
 	private registerDependencyOnce<T>(resolution: "singleton" | "transient", token: Token<T>, dependency: Constructable<T>): void {
 		const dependencyAlreadyRegistered: boolean = this.registeredDependencies.has(token);
 		if (dependencyAlreadyRegistered) {
-			throw new Error(`${dependency.name} has been already registered!`);
+			throw new DuplicateDependencyException(dependency.name);
 		}
 
 		const registeredDependency: IRegisteredDependency<T> = {

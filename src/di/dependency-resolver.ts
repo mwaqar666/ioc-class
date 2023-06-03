@@ -1,5 +1,6 @@
 import { DIConst } from "@/const";
 import type { Token } from "@/di/token";
+import { CaptiveDependencyException, InvalidDependencyException, MissingDependencyException } from "@/exceptions";
 import type { IContainer, IDependencyResolver } from "@/interfaces";
 import type { Constructable, IRegisteredDependency, Optional, RequiredDependencyMap } from "@/types";
 
@@ -23,6 +24,9 @@ export class DependencyResolver implements IDependencyResolver {
 	 * @template T
 	 * @param {Token<T>} token Dependency token
 	 * @return {T} Resolved dependency
+	 * @throws MissingDependencyException
+	 * @throws CaptiveDependencyException
+	 * @throws InvalidDependencyException
 	 * @author Muhammad Waqar
 	 */
 	public resolveDependency<T>(token: Token<T>): T;
@@ -35,6 +39,9 @@ export class DependencyResolver implements IDependencyResolver {
 	 * @param {Token<T>} token Dependency token
 	 * @param {IRegisteredDependency<P>} parentDependency Dependency token
 	 * @return {T} Resolved dependency
+	 * @throws MissingDependencyException
+	 * @throws CaptiveDependencyException
+	 * @throws InvalidDependencyException
 	 * @author Muhammad Waqar
 	 */
 	public resolveDependency<T, P>(token: Token<T>, parentDependency: IRegisteredDependency<P>): T;
@@ -70,7 +77,7 @@ export class DependencyResolver implements IDependencyResolver {
 				return this.resolveDependency(dependencyToken, registeredDependency);
 			}
 
-			throw new Error(`Cannot resolve dependency of type "${paramTypeDependency.name}"`);
+			throw new InvalidDependencyException(paramTypeDependency.name);
 		});
 
 		return Reflect.construct(registeredDependency.dependency, resolvedDependencies);
@@ -80,7 +87,7 @@ export class DependencyResolver implements IDependencyResolver {
 		const registeredDependency: Optional<IRegisteredDependency<T>> = <Optional<IRegisteredDependency<T>>>this.container.getRegisteredDependencies().get(token);
 		if (registeredDependency) return registeredDependency;
 
-		throw new Error(`Dependency token "${token.name}" not registered with the container`);
+		throw new MissingDependencyException(token.name);
 	}
 
 	private checkForCaptiveDependency<T, P>(dependency: IRegisteredDependency<T>, dependent: IRegisteredDependency<P>): void {
@@ -88,7 +95,7 @@ export class DependencyResolver implements IDependencyResolver {
 
 		if (dependency.resolution === "singleton") return;
 
-		throw new Error(`Captive dependency detected: Singleton[${dependent.dependency.name}] -> Transient[${dependency.dependency.name}]`);
+		throw new CaptiveDependencyException(dependent.dependency.name, dependency.dependency.name);
 	}
 
 	private resolveDependencyCustomMetadata<T>(dependency: Constructable<T>): RequiredDependencyMap {
