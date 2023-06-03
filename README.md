@@ -336,6 +336,7 @@ IOCC protects you from these captive dependencies, so when you try to resolve th
 ```
 CaptiveDependencyException [Error]: Captive dependency detected: Singleton[OrderApiGateway] -> Transient[TaxCodeCalculator]
 ```
+
 ## FAQ
 
 - Can it resolve type hinted dependency when used as typed imports?
