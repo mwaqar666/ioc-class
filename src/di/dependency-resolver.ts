@@ -64,23 +64,51 @@ export class DependencyResolver implements IDependencyResolver {
 	}
 
 	private resolveDependencyChain<T>(registeredDependency: IRegisteredDependency<T>): T {
-		const injectedDependencies: RequiredDependencyMap = this.resolveDependencyCustomMetadata(registeredDependency.dependency);
-		const paramTypesDependencies: Array<Constructable<unknown>> = this.resolveDependencyParamTypesMetadata(registeredDependency.dependency);
+		const dependenciesByToken: RequiredDependencyMap = this.resolveDependencyCustomMetadata(registeredDependency.dependency);
+		const dependenciesByReflection: Array<Constructable<unknown>> = this.resolveDependencyParamTypesMetadata(registeredDependency.dependency);
 
-		const resolvedDependencies: Array<unknown> = paramTypesDependencies.map((paramTypeDependency: Constructable<unknown>, index: number): unknown => {
-			const injectedDependencyToken: Optional<Token<unknown>> = injectedDependencies.get(index);
-			if (injectedDependencyToken) return this.resolveDependency(injectedDependencyToken, registeredDependency);
+		// If there are not any dependencies either by token or through reflection, then we just construct the dependency
+		if (dependenciesByReflection.length === 0 && dependenciesByToken.size === 0) {
+			return Reflect.construct(registeredDependency.dependency, []);
+		}
 
-			if (paramTypeDependency.name !== "Object") {
-				const dependencyToken: Token<unknown> = this.container.createDependencyToken(paramTypeDependency);
+		const dependenciesTokenList: Array<Token<unknown>> = this.prepareDependencyTokenList(dependenciesByToken, dependenciesByReflection, registeredDependency);
 
-				return this.resolveDependency(dependencyToken, registeredDependency);
+		return Reflect.construct(
+			registeredDependency.dependency,
+			dependenciesTokenList.map((dependencyToken: Token<unknown>): unknown => this.resolveDependency(dependencyToken, registeredDependency)),
+		);
+	}
+
+	private prepareDependencyTokenList<T>(dependenciesByToken: RequiredDependencyMap, dependenciesByReflection: Array<Constructable<unknown>>, registeredDependency: IRegisteredDependency<T>): Array<Token<unknown>> {
+		const dependenciesTokenList: Array<Token<unknown>> = [];
+		const dependenciesByTokenIndices: Array<number> = Array.from(dependenciesByToken.keys());
+
+		// We check what is the biggest index on which the dependency is injected through token,
+		// and then we add 1 to it because length is always 1 greater than the index
+		const dependenciesLengthByToken: number = Math.max(...dependenciesByTokenIndices) + 1;
+		const dependenciesLengthByReflection: number = dependenciesByReflection.length;
+
+		const dependenciesLength: number = dependenciesLengthByToken > dependenciesLengthByReflection ? dependenciesLengthByToken : dependenciesLengthByReflection;
+
+		for (let dependencyIndex = 0; dependencyIndex < dependenciesLength; dependencyIndex++) {
+			const dependencyByToken: Optional<Token<unknown>> = dependenciesByToken.get(dependencyIndex);
+			// Dependency found in manual injection
+			if (dependencyByToken) {
+				dependenciesTokenList.push(dependencyByToken);
+				continue;
 			}
 
-			throw new InvalidDependencyException(paramTypeDependency.name);
-		});
+			const dependencyByReflection: Optional<Constructable<unknown>> = dependenciesByReflection[dependencyIndex];
+			if (this.isValidDependency(dependencyByReflection)) {
+				dependenciesTokenList.push(this.container.createDependencyToken(dependencyByReflection));
+				continue;
+			}
 
-		return Reflect.construct(registeredDependency.dependency, resolvedDependencies);
+			throw new InvalidDependencyException(dependencyIndex.toString(), registeredDependency.dependency.name);
+		}
+
+		return dependenciesTokenList;
 	}
 
 	private verifyDependencyPresenceInContainer<T>(token: Token<T>): IRegisteredDependency<T> {
@@ -108,5 +136,11 @@ export class DependencyResolver implements IDependencyResolver {
 		const dependencies = Reflect.getMetadata("design:paramtypes", dependency);
 
 		return dependencies ?? [];
+	}
+
+	private isValidDependency(dependency: Optional<Constructable<unknown>>): dependency is Constructable<unknown> {
+		if (!dependency) return false;
+
+		return ![Object.name, Function.name].includes(dependency.name);
 	}
 }

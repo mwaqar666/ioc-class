@@ -7,7 +7,7 @@ import { BaseException } from "@/exceptions/base.exception";
  * @author Muhammad Waqar
  */
 export class InvalidDependencyException extends BaseException {
-	public constructor(dependencyName: string) {
-		super(`Cannot resolve dependency of type "${dependencyName}"`);
+	public constructor(dependencyIndex: string, dependantName: string) {
+		super(`Invalid dependency at index "${dependencyIndex}" while resolving ${dependantName}`);
 	}
 }

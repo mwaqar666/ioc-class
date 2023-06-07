@@ -17,7 +17,7 @@ export default async (environment: TWebpackEnvironment): Promise<Configuration> 
 			path: join(__dirname, "dist"),
 			globalObject: "this",
 			library: {
-				name: "DI",
+				name: "IOCC",
 				type: "umd",
 			},
 		},
