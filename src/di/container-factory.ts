@@ -1,32 +1,31 @@
 import { DIConst } from "@/const";
-import type { IContainer, IContainerFactory } from "@/interfaces";
-import type { Constructable, IResolvedContainerName, Optional } from "@/types";
+import { Container } from "@/di/container";
+import type { IContainer } from "@/interfaces";
+import type { IResolvedContainerName, Optional } from "@/types";
 
 /**
  * Container factory creates the instances of the container when requested,
  * and keeps track of all the created container instances
  *
- * @implements IContainerFactory
  * @author Muhammad Waqar
  */
-export class ContainerFactory implements IContainerFactory {
+export class ContainerFactory {
 	private static _instance: ContainerFactory;
-	private readonly container: Constructable<IContainer>;
 	private readonly containerInstances: Map<symbol, IContainer>;
 
-	private constructor(container: Constructable<IContainer>) {
-		this.container = container;
+	private constructor() {
 		this.containerInstances = new Map<symbol, IContainer>();
 	}
 
-	public static getInstance(container: Constructable<IContainer>): ContainerFactory {
-		if (ContainerFactory._instance) return ContainerFactory._instance;
-
-		ContainerFactory._instance = new ContainerFactory(container);
-
-		return ContainerFactory._instance;
-	}
-
+	/**
+	 * Retrieves the container instance with the provided name, or default name, if none is provided.
+	 * If the container with the provided name is present, returns the same instance, otherwise,
+	 * create, store and return the new container instance.
+	 *
+	 * @return {IContainer} Container instance
+	 * @author Muhammad Waqar
+	 */
+	public static getContainer(): IContainer;
 	/**
 	 * Retrieves the container instance with the provided name, or default name, if none is provided.
 	 * If the container with the provided name is present, returns the same instance, otherwise,
@@ -36,16 +35,25 @@ export class ContainerFactory implements IContainerFactory {
 	 * @return {IContainer} Container instance
 	 * @author Muhammad Waqar
 	 */
-	public of(name: Optional<symbol>): IContainer {
+	public static getContainer(name: symbol): IContainer;
+	public static getContainer(name?: symbol): IContainer {
+		if (!ContainerFactory._instance) {
+			ContainerFactory._instance = new ContainerFactory();
+		}
+
+		return ContainerFactory._instance.resolveContainerInstance(name);
+	}
+
+	private resolveContainerInstance(name: Optional<symbol>): IContainer {
 		const { containerName }: IResolvedContainerName = this.resolveContainerName(name);
 
-		const containerInstance: Optional<IContainer> = this.containerInstances.get(containerName);
+		let containerInstance: Optional<IContainer> = this.containerInstances.get(containerName);
 		if (containerInstance) return containerInstance;
 
-		const newContainerInstance: IContainer = new this.container();
-		this.containerInstances.set(containerName, newContainerInstance);
+		containerInstance = new Container();
+		this.containerInstances.set(containerName, containerInstance);
 
-		return newContainerInstance;
+		return containerInstance;
 	}
 
 	private resolveContainerName(containerName: Optional<symbol>): IResolvedContainerName {

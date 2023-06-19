@@ -1,12 +1,12 @@
-import { Container } from "@/di";
+import { DIConst } from "@/const";
 import { ContainerFactory } from "@/di/container-factory";
 import { MissingResolutionException } from "@/exceptions";
 import type { IContainer } from "@/interfaces";
 import type { Constructable, InjectableConfig } from "@/types";
 
-function Injectable(config: Partial<InjectableConfig>): <T>(target: Constructable<T>) => Constructable<T> {
+function Injectable(config: InjectableConfig): <T>(target: Constructable<T>) => Constructable<T> {
 	return <T>(target: Constructable<T>): Constructable<T> => {
-		const container: IContainer = ContainerFactory.getInstance(Container).of(config.containerName);
+		const container: IContainer = ContainerFactory.getContainer(config.containerName);
 
 		if (config.dependencyResolution === "singleton") {
 			container.registerSingleton(target);
@@ -27,14 +27,22 @@ function Injectable(config: Partial<InjectableConfig>): <T>(target: Constructabl
 /**
  * Registers the singleton dependency in the container with the provided name
  *
+ * @return {<T>(target: Constructable<T>) => Constructable<T>} Class decorator for the injected singleton dependency
+ * @author Muhammad Waqar
+ */
+export function Singleton(): <T>(target: Constructable<T>) => Constructable<T>;
+/**
+ * Registers the singleton dependency in the container with the provided name
+ *
  * @param {string} containerName Container name to use or "Default" if no name is provided
  * @return {<T>(target: Constructable<T>) => Constructable<T>} Class decorator for the injected singleton dependency
  * @author Muhammad Waqar
  */
+export function Singleton(containerName: symbol): <T>(target: Constructable<T>) => Constructable<T>;
 export function Singleton(containerName?: symbol): <T>(target: Constructable<T>) => Constructable<T> {
 	return <T>(target: Constructable<T>): Constructable<T> => {
 		return Injectable({
-			containerName,
+			containerName: containerName ?? DIConst.DEFAULT_CONTAINER_NAME,
 			dependencyResolution: "singleton",
 		})(target);
 	};
@@ -43,14 +51,22 @@ export function Singleton(containerName?: symbol): <T>(target: Constructable<T>)
 /**
  * Registers the transient dependency in the container with the provided name
  *
+ * @return {<T>(target: Constructable<T>) => Constructable<T>} Class decorator for the injected transient dependency
+ * @author Muhammad Waqar
+ */
+export function Transient(): <T>(target: Constructable<T>) => Constructable<T>;
+/**
+ * Registers the transient dependency in the container with the provided name
+ *
  * @param {string} containerName Container name to use or "Default" if no name is provided
  * @return {<T>(target: Constructable<T>) => Constructable<T>} Class decorator for the injected transient dependency
  * @author Muhammad Waqar
  */
+export function Transient(containerName: symbol): <T>(target: Constructable<T>) => Constructable<T>;
 export function Transient(containerName?: symbol): <T>(target: Constructable<T>) => Constructable<T> {
 	return <T>(target: Constructable<T>): Constructable<T> => {
 		return Injectable({
-			containerName,
+			containerName: containerName ?? DIConst.DEFAULT_CONTAINER_NAME,
 			dependencyResolution: "transient",
 		})(target);
 	};

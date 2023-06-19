@@ -1,4 +1,3 @@
-import { ContainerFactory } from "@/di/container-factory";
 import { DependencyResolver } from "@/di/dependency-resolver";
 import { Token } from "@/di/token";
 import { DuplicateDependencyException } from "@/exceptions";
@@ -22,31 +21,12 @@ export class Container implements IContainer {
 
 	/**
 	 * You should not create the instance of Container class yourself.
-	 * Use one of the static factory methods on the class instead
+	 * Use `ContainerFactory.getContainer` instead
 	 *
 	 * @author Muhammad Waqar
 	 */
 	public constructor() {
 		this.dependencyResolver = new DependencyResolver(this);
-	}
-
-	/**
-	 * Create container with default name
-	 *
-	 * @return {IContainer} Container instance
-	 * @author Muhammad Waqar
-	 */
-	public static of(): IContainer;
-	/**
-	 * Create container with provided name
-	 *
-	 * @param {symbol} containerName Name for the container instance
-	 * @return {IContainer} A container instance
-	 * @author Muhammad Waqar
-	 */
-	public static of(containerName: symbol): IContainer;
-	public static of(containerName?: symbol): IContainer {
-		return ContainerFactory.getInstance(Container).of(containerName);
 	}
 
 	/**
