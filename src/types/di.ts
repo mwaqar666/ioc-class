@@ -25,6 +25,15 @@ export interface InjectableConfig {
 
 export type DependencyResolutionType = "singleton" | "transient";
 
+export interface IDependencyRegisterOptions {
+	/**
+	 * What to do if try to register an already registered dependency
+	 *
+	 * Default: throw
+	 */
+	onDuplicate?: "ignore" | "throw";
+}
+
 /**
  * Registered dependency type
  *

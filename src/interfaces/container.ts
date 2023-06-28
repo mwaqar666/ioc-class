@@ -1,5 +1,5 @@
 import type { Token } from "@/di";
-import type { Constructable, DependencyMap, SingletonDependencyMap } from "@/types";
+import type { Constructable, DependencyMap, IDependencyRegisterOptions, SingletonDependencyMap } from "@/types";
 
 export interface IContainer {
 	/**
@@ -34,6 +34,18 @@ export interface IContainer {
 	registerSingleton<T>(token: Constructable<T>): void;
 
 	/**
+	 * Register a singleton dependency using the dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} token Dependency constructor
+	 * @param {IDependencyRegisterOptions} dependency Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	registerSingleton<T>(token: Constructable<T>, dependency: IDependencyRegisterOptions): void;
+
+	/**
 	 * Register a singleton dependency using the dependency token
 	 *
 	 * @template T
@@ -44,6 +56,19 @@ export interface IContainer {
 	 * @author Muhammad Waqar
 	 */
 	registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
+
+	/**
+	 * Register a singleton dependency using the dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @param {IDependencyRegisterOptions} registerOptions Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	registerSingleton<T>(token: Token<T>, dependency: Constructable<T>, registerOptions: IDependencyRegisterOptions): void;
 
 	/**
 	 * Register a transient dependency using the dependency constructor
@@ -57,6 +82,18 @@ export interface IContainer {
 	registerTransient<T>(token: Constructable<T>): void;
 
 	/**
+	 * Register a transient dependency using the dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} token Dependency constructor
+	 * @param {IDependencyRegisterOptions} dependency Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	registerTransient<T>(token: Constructable<T>, dependency: IDependencyRegisterOptions): void;
+
+	/**
 	 * Register a transient dependency using the dependency token
 	 *
 	 * @template T
@@ -67,6 +104,19 @@ export interface IContainer {
 	 * @author Muhammad Waqar
 	 */
 	registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;
+
+	/**
+	 * Register a transient dependency using the dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @param {IDependencyRegisterOptions} registerOptions Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	registerTransient<T>(token: Token<T>, dependency: Constructable<T>, registerOptions: IDependencyRegisterOptions): void;
 
 	/**
 	 * Retrieves the list of all singleton dependencies that have been requested from the container till yet

@@ -1,8 +1,9 @@
+import { DIConst } from "@/const";
 import { DependencyResolver } from "@/di/dependency-resolver";
 import { Token } from "@/di/token";
 import { DuplicateDependencyException } from "@/exceptions";
 import type { IContainer, IDependencyResolver } from "@/interfaces";
-import type { Constructable, DependencyMap, IRegisteredDependency, Optional, SingletonDependencyMap } from "@/types";
+import type { Constructable, DependencyMap, IDependencyRegisterOptions, IRegisteredDependency, Optional, SingletonDependencyMap } from "@/types";
 
 /**
  * Container class holds all the registered singleton and transient dependencies.
@@ -65,6 +66,17 @@ export class Container implements IContainer {
 	 */
 	public registerSingleton<T>(token: Constructable<T>): void;
 	/**
+	 * Register a singleton dependency using the dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} token Dependency constructor
+	 * @param {IDependencyRegisterOptions} dependency Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	public registerSingleton<T>(token: Constructable<T>, dependency: IDependencyRegisterOptions): void;
+	/**
 	 * Register a singleton dependency using the dependency token
 	 *
 	 * @template T
@@ -75,14 +87,28 @@ export class Container implements IContainer {
 	 * @author Muhammad Waqar
 	 */
 	public registerSingleton<T>(token: Token<T>, dependency: Constructable<T>): void;
-	public registerSingleton<T>(token: Token<T> | Constructable<T>, dependency?: Constructable<T>): void {
+	/**
+	 * Register a singleton dependency using the dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @param {IDependencyRegisterOptions} registerOptions Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	public registerSingleton<T>(token: Token<T>, dependency: Constructable<T>, registerOptions: IDependencyRegisterOptions): void;
+	public registerSingleton<T>(token: Token<T> | Constructable<T>, dependency?: Constructable<T> | IDependencyRegisterOptions, registerOptions?: IDependencyRegisterOptions): void {
 		if (token instanceof Token) {
-			this.registerDependencyOnce("singleton", token, <Constructable<T>>dependency);
+			const preparedRegisterOptions: Required<IDependencyRegisterOptions> = this.prepareDependencyRegisterOptions(registerOptions ?? {});
+			this.registerDependencyOnce("singleton", token, <Constructable<T>>dependency, preparedRegisterOptions);
 			return;
 		}
 
+		const preparedRegisterOptions: Required<IDependencyRegisterOptions> = this.prepareDependencyRegisterOptions(<IDependencyRegisterOptions>dependency ?? {});
 		const dependencyToken: Token<T> = this.createDependencyToken(token);
-		this.registerDependencyOnce("singleton", dependencyToken, token);
+		this.registerDependencyOnce("singleton", dependencyToken, token, preparedRegisterOptions);
 	}
 
 	/**
@@ -95,6 +121,19 @@ export class Container implements IContainer {
 	 * @author Muhammad Waqar
 	 */
 	public registerTransient<T>(token: Constructable<T>): void;
+
+	/**
+	 * Register a transient dependency using the dependency constructor
+	 *
+	 * @template T
+	 * @param {Constructable<T>} token Dependency constructor
+	 * @param {IDependencyRegisterOptions} dependency Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	public registerTransient<T>(token: Constructable<T>, dependency: IDependencyRegisterOptions): void;
+
 	/**
 	 * Register a transient dependency using the dependency token
 	 *
@@ -106,14 +145,29 @@ export class Container implements IContainer {
 	 * @author Muhammad Waqar
 	 */
 	public registerTransient<T>(token: Token<T>, dependency: Constructable<T>): void;
-	public registerTransient<T>(token: Token<T> | Constructable<T>, dependency?: Constructable<T>): void {
+
+	/**
+	 * Register a transient dependency using the dependency token
+	 *
+	 * @template T
+	 * @param {Token<T>} token Dependency token
+	 * @param {Constructable<T>} dependency Dependency constructor
+	 * @param {IDependencyRegisterOptions} registerOptions Dependency register options
+	 * @return {void}
+	 * @throws DuplicateDependencyException
+	 * @author Muhammad Waqar
+	 */
+	public registerTransient<T>(token: Token<T>, dependency: Constructable<T>, registerOptions: IDependencyRegisterOptions): void;
+	public registerTransient<T>(token: Token<T> | Constructable<T>, dependency?: Constructable<T> | IDependencyRegisterOptions, registerOptions?: IDependencyRegisterOptions): void {
 		if (token instanceof Token) {
-			this.registerDependencyOnce("transient", token, <Constructable<T>>dependency);
+			const preparedRegisterOptions: Required<IDependencyRegisterOptions> = this.prepareDependencyRegisterOptions(registerOptions ?? {});
+			this.registerDependencyOnce("transient", token, <Constructable<T>>dependency, preparedRegisterOptions);
 			return;
 		}
 
+		const preparedRegisterOptions: Required<IDependencyRegisterOptions> = this.prepareDependencyRegisterOptions(<IDependencyRegisterOptions>dependency ?? {});
 		const dependencyToken: Token<T> = this.createDependencyToken(token);
-		this.registerDependencyOnce("transient", dependencyToken, token);
+		this.registerDependencyOnce("transient", dependencyToken, token, preparedRegisterOptions);
 	}
 
 	/**
@@ -154,9 +208,18 @@ export class Container implements IContainer {
 		return newDependencyToken;
 	}
 
-	private registerDependencyOnce<T>(resolution: "singleton" | "transient", token: Token<T>, dependency: Constructable<T>): void {
+	private prepareDependencyRegisterOptions(registerOptions: IDependencyRegisterOptions): Required<IDependencyRegisterOptions> {
+		return {
+			...DIConst.DEFAULT_DEPENDENCY_REGISTER_OPTIONS,
+			...registerOptions,
+		};
+	}
+
+	private registerDependencyOnce<T>(resolution: "singleton" | "transient", token: Token<T>, dependency: Constructable<T>, registerOptions: Required<IDependencyRegisterOptions>): void {
 		const dependencyAlreadyRegistered: boolean = this.registeredDependencies.has(token);
 		if (dependencyAlreadyRegistered) {
+			if (registerOptions.onDuplicate === "ignore") return;
+
 			throw new DuplicateDependencyException(dependency.name);
 		}
 
