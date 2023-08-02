@@ -18,7 +18,7 @@
   "scripts": {
     "build:dev": "pnpm run rm:dist && webpack --env mode=development && pnpm run path:resolve",
     "build:prod": "pnpm run rm:dist && webpack --env mode=production && pnpm run path:resolve",
-    "rm:dist": "rm -rf dist",
+    "rm:dist": "rimraf dist",
     "path:resolve": "tspc --emitDeclarationOnly",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --ignore-path .eslintignore --fix --ext .js,.ts .",
@@ -49,6 +49,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.8",
     "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.1",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "ts-patch": "3.0.0-beta3",
