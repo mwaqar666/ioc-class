@@ -1,4 +1,5 @@
 import type { Token } from "@/di";
+import type { OnDuplicateRegister, ResolutionType } from "@/enums";
 import type { Constructable } from "@/types/common";
 
 /**
@@ -15,23 +16,21 @@ export interface InjectableConfig {
 	 */
 	readonly containerName: symbol;
 	/**
-	 * Dependency resolution type. Can be either “singleton” or “transient”
+	 * Dependency resolution type
 	 *
-	 * @type {DependencyResolutionType}
+	 * @type {ResolutionType}
 	 * @author Muhammad Waqar
 	 */
-	readonly dependencyResolution: DependencyResolutionType;
+	readonly dependencyResolution: ResolutionType;
 }
-
-export type DependencyResolutionType = "singleton" | "transient";
 
 export interface IDependencyRegisterOptions {
 	/**
 	 * What to do if try to register an already registered dependency
 	 *
-	 * Default: throw
+	 * @default OnDuplicateRegister.THROW
 	 */
-	onDuplicate?: "ignore" | "throw";
+	readonly onDuplicate?: OnDuplicateRegister;
 }
 
 /**
@@ -49,12 +48,35 @@ export interface IRegisteredDependency<T> {
 	 */
 	readonly dependency: Constructable<T>;
 	/**
-	 * Dependency resolution type. Can be either "singleton" or "transient"
+	 * Dependency resolution type
 	 *
-	 * @type {DependencyResolutionType}
+	 * @type {ResolutionType}
 	 * @author Muhammad Waqar
 	 */
-	readonly resolution: DependencyResolutionType;
+	readonly resolution: ResolutionType;
+}
+
+/**
+ * Resolved dependency type
+ *
+ * @author Muhammad Waqar
+ */
+export interface IResolvedDependency<T> {
+	/**
+	 * Resolved dependency
+	 *
+	 * @template T
+	 * @type {T}
+	 * @author Muhammad Waqar
+	 */
+	readonly dependency: T;
+	/**
+	 * Dependency resolution type
+	 *
+	 * @type {ResolutionType}
+	 * @author Muhammad Waqar
+	 */
+	readonly resolution: ResolutionType;
 }
 
 export interface IResolvedContainerName {
@@ -65,4 +87,4 @@ export type DependencyMap = Map<Token<unknown>, IRegisteredDependency<unknown>>;
 
 export type RequiredDependencyMap = Map<number, Token<unknown>>;
 
-export type SingletonDependencyMap = Map<Token<unknown>, unknown>;
+export type CachedResolvedDependencyMap = Map<Token<unknown>, IResolvedDependency<unknown>>;

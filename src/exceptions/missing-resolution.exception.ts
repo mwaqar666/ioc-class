@@ -9,6 +9,6 @@ import { BaseException } from "@/exceptions/base.exception";
  */
 export class MissingResolutionException extends BaseException {
 	public constructor(dependencyName: string) {
-		super(`Dependency resolution of "${dependencyName}" must be either "singleton" or "transient". None given!`);
+		super(`Dependency resolution of "${dependencyName}" must be either "SINGLETON", "SCOPED" or "TRANSIENT". None given!`);
 	}
 }
