@@ -61,7 +61,7 @@ export interface IRegisteredDependency<T> {
  *
  * @author Muhammad Waqar
  */
-export interface IResolvedDependency<T> {
+export interface IResolvedDependency<T> extends Omit<IRegisteredDependency<T>, "dependency"> {
 	/**
 	 * Resolved dependency
 	 *
@@ -70,13 +70,6 @@ export interface IResolvedDependency<T> {
 	 * @author Muhammad Waqar
 	 */
 	readonly dependency: T;
-	/**
-	 * Dependency resolution type
-	 *
-	 * @type {ResolutionType}
-	 * @author Muhammad Waqar
-	 */
-	readonly resolution: ResolutionType;
 }
 
 export interface IResolvedContainerName {

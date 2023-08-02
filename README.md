@@ -86,9 +86,9 @@ class LibraryService {
 Resolve them anywhere
 
 ```typescript
-import { Container, IContainer } from "iocc";
+import { ContainerFactory, IContainer } from "iocc";
 
-const container: IContainer = Container.of();
+const container: IContainer = ContainerFactory.getContainer();
 
 const libraryService: LibraryService = container.resolve(LibraryService);
 ```
@@ -101,15 +101,15 @@ Container is initialized in two ways:
 
 #### Explicitly initializing via container factory:
 
-Container can be initialized using the factory function `Container.of()`:
+Container can be initialized using the factory function `ContainerFactory.getContainer()`:
 
 ```typescript
-import { Container, IContainer } from "iocc";
+import { ContainerFactory, IContainer } from "iocc";
 
-const defaultContainer: IContainer = Container.of(); // Default container instance
+const defaultContainer: IContainer = ContainerFactory.getContainer(); // Default container instance
 
 const TestContainerIdentifier: symbol = Symbol("TEST_CONTAINER");
-const container: IContainer = Container.of(TestContainerIdentifier); // Test container instance
+const container: IContainer = ContainerFactory.getContainer(TestContainerIdentifier); // Test container instance
 ```
 
 These two instances of `IContainer` are separated and contain their own dependencies. No dependency from one container can interact or use dependency from the other container.
@@ -399,7 +399,32 @@ const library: Library = container.resolve(Library);
 Scoped dependencies depends upon the definition of "SCOPE" of the application that is using the IOCC library.
 A classic example of that would be request scoped dependencies, i.e. dependencies that will be instantiated once per request life cycle and gets destroyed at the end of request lifecycle.
 
-To denote the end of scope
+To denote the end of scope, call the `resetScopedDependencies` method on the `container` instance.
+
+```typescript
+import { IContainer, ContainerFactory } from "iocc";
+
+class ScopedDependency {
+	public counter: number = 0;
+}
+
+const container: IContainer = ContainerFactory.getContainer();
+
+container.registerScoped(ScopedDependency);
+
+const scopedDependencyOne: ScopedDependency = container.resolve(ScopedDependency);
+console.log(scopedDependencyOne.counter); // 0
+scopedDependencyOne.counter++;
+console.log(scopedDependencyOne.counter); // 1
+
+// Scope ended
+container.resetScopedDependencies();
+
+const scopedDependencyTwo: ScopedDependency = container.resolve(ScopedDependency);
+console.log(scopedDependencyTwo.counter); // 0
+scopedDependencyTwo.counter++;
+console.log(scopedDependencyTwo.counter); // 1
+```
 
 ### Protection against captive dependencies
 
