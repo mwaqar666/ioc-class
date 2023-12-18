@@ -428,7 +428,9 @@ console.log(scopedDependencyTwo.counter); // 1
 
 ### Protection against captive dependencies
 
-According to the documentation at [Microsoft .NET Core](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines#captive-dependency), captive dependency is a dependency whose instance is expected to be destroyed earlier than the dependant instance, but is kept captive, due the life cycle of the dependant.
+According to the documentation at [Microsoft](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines#captive-dependency)
+
+> The term [Captive Dependency](https://blog.ploeh.dk/2014/06/02/captive-dependency/) was coined by [Mark Seemann](https://blog.ploeh.dk/about/), and refers to the misconfiguration of service lifetimes, where a longer-lived service holds a shorter-lived service captive.
 
 Consider this example:
 
